@@ -1,7 +1,9 @@
 const byte numChars = 32;
 char receivedChars[numChars]; // an array to store the received data
+int lengthOfData;
 const int led = 2;
 boolean newData = false;
+const int relayPins[2] = {10,11};
 
 void setup() {  
   Serial.begin(9600);
@@ -11,19 +13,35 @@ void setup() {
 }
 
 void loop() {
-  recvWithEndMarker();
-   if (newData == true) {
-     Serial.print("Recived serial message: ");
-     Serial.println(receivedChars);
-     if (strcmp(receivedChars,"on") == 0 ){
-      Serial.println("Turning on led");
-      digitalWrite(led, LOW);
-     }else if (strcmp(receivedChars,"off") == 0 ){
-      Serial.println("Turning off led");
-      digitalWrite(led, HIGH);
-     } else {
-      Serial.println("Unkown Keyword");
-     }
+    recvWithEndMarker();
+    if (newData == true) {
+    Serial.print("Recived serial message: ");
+    Serial.println(receivedChars);
+    if (lengthOfData == 2) {
+      int relayPin = 0;
+      if (receivedChars[0] == '0') {
+        Serial.println("Left relay command");
+        relayPin = relayPins[0];
+      } else if (receivedChars[0] == '1') {
+        Serial.println("Right relay command");
+        relayPin = relayPins[1];
+      } else {
+        Serial.println("Unkonwn relay address");
+        return;
+      }
+      if (receivedChars[1] == '0') {
+        Serial.println("Turing Off");
+        digitalWrite(relayPin, LOW);
+      } else if (receivedChars[1] == '1') {
+        Serial.println("Turing On");
+        digitalWrite(relayPin, HIGH);
+      } else {
+        Serial.println("Unkonwn relay state");
+        return;
+      }
+    } else {
+        Serial.println("Message was not correct size: " + String(lengthOfData));
+    }
      
      newData = false;
    }
@@ -48,6 +66,7 @@ String getNextSerialMessage() {
 }
 void recvWithEndMarker() {
  static byte ndx = 0;
+ lengthOfData = 0;
  char endMarker = '>';
  char rc;
  
@@ -56,16 +75,17 @@ void recvWithEndMarker() {
    rc = Serial.read();
   
    if (rc != endMarker) {
-   receivedChars[ndx] = rc;
-   ndx++;
-   if (ndx >= numChars) {
-   ndx = numChars - 1;
-   }
+    receivedChars[ndx] = rc;
+    ndx++;
+    if (ndx >= numChars) {
+      ndx = numChars - 1;
+    }
    }
    else {
-   receivedChars[ndx] = '\0'; // terminate the string
-   ndx = 0;
-   newData = true;
+    receivedChars[ndx] = '\0'; // terminate the string
+    lengthOfData = ndx;
+    ndx = 0;
+    newData = true;
    }
  }
 }
