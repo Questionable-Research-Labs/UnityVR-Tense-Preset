@@ -8,7 +8,8 @@ const int relayPins[2] = {2,3};
 void setup() {  
   Serial.begin(9600);
   while(!Serial){}
-  pinMode(led, OUTPUT);
+  pinMode(relayPins[0], OUTPUT);
+  pinMode(relayPins[1], OUTPUT);
   Serial.println("Ardunio Serial is on");
 }
 
