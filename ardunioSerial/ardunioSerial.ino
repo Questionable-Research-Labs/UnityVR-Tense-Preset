@@ -3,7 +3,7 @@ char receivedChars[numChars]; // an array to store the received data
 int lengthOfData;
 const int led = 2;
 boolean newData = false;
-const int relayPins[2] = {10,11};
+const int relayPins[2] = {2,3};
 
 void setup() {  
   Serial.begin(9600);
@@ -30,11 +30,11 @@ void loop() {
         return;
       }
       if (receivedChars[1] == '0') {
-        Serial.println("Turing Off");
-        digitalWrite(relayPin, LOW);
-      } else if (receivedChars[1] == '1') {
-        Serial.println("Turing On");
+        Serial.println("Turing Off pin " + String(relayPin));
         digitalWrite(relayPin, HIGH);
+      } else if (receivedChars[1] == '1') {
+        Serial.println("Turing On pin " + String(relayPin));
+        digitalWrite(relayPin, LOW);
       } else {
         Serial.println("Unkonwn relay state");
         return;
