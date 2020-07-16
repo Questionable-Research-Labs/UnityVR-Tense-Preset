@@ -21,8 +21,7 @@ namespace UnityVRScripts {
             if (useArdunio)
             {
                 serialPortStream = new SerialPort(arduinoPort, 9600);
-                serialPortStream.Open();
-                
+                serialPortStream.Open(); 
             }
             else {
                 Debug.Log("Ard is not enabled");
